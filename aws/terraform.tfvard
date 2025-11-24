@@ -1,0 +1,5 @@
+aws_access_key   = ""
+aws_secret_key   = ""
+public_ssh_key   = ""
+bastion_ip       = "212.189.202.200/32" # ?
+

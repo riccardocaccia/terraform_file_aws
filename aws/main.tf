@@ -1,4 +1,14 @@
 terraform {
+  # Remote backend with s3 bucket e dynamodb
+  backend "s3" {
+    bucket         = "nome"
+    key            = "percorso bucket .../terraform.tfstate"
+    region         = var.aws_region
+    dynamodb_table = "" 
+    encrypt        = true              
+  }
+
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -13,7 +23,17 @@ provider "aws" {
   secret_key = var.aws_secret_key
 }
 
-# TODO: AMI ubuntu o Rocky
+# ubuntu o Rocky
+data "aws_ami" "rocky_9" {
+  most_recent = true
+
+  filter {
+    name = "name"
+    values = [""] # check on ec2 -> amis e poi public images
+  }
+  owner = [""] # id o aws marketplace?
+}
+
 
 #keypair
 resource "aws_key_pair" "vm_key" {
@@ -29,10 +49,13 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.10.2.0/24"
-  availability_zone = var.aws_region
+  availability_zone = "${var.aws_region}a"
 }
 
-# TODO: secuity group, see sec_g.tf
+# secuity group
+#resource "aws_security_group" "galaxy_instance" {
+#  name = "galaxy_instance_security_group"
+#}
 
 # Ssh only from Bastion
 resource "aws_security_group" "ssh_internal" {
@@ -41,17 +64,17 @@ resource "aws_security_group" "ssh_internal" {
   description = "allow SSH only from Bastion"
 
   ingress {
-    from_port   = 
-    to_port     = 
+    from_port   = 22 
+    to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = "212.189.202.200/32"
+    cidr_blocks = [var.bastion_ip]
   }
 
   egress {
-    from_port   = 
-    to_port     = 
-    protocol    = 
-    cidr_blocks = 
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -65,17 +88,29 @@ resource "aws_security_group" "http_access" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = 
+    cidr_blocks = [var.bastion_ip]
   }
 
   egress {
-    from_port   = 
-    to_port     = 
-    protocol    = 
-    cidr_blocks = 
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 # GALAXY insatnce
+resource "aws_instance" "galaxy_vm" {
+  ami                    = data.aws_ami.rocky_9.id
+  instance_type          = "t3.xlarge"
+  subnet_id              = aws_subnet.private.id
+  vpc_security_group_ids = [
+    aws_security_group.ssh_internal.id,
+    aws_security_group.http_access.id,
+  ]
 
+  key_name = aws_key_pair.vm_key.key_name
+  user_data = file(".../cloudinit.sh")
+  }
+}
 # outputs

@@ -1,3 +1,5 @@
+# PUT IN THE .gitignore
+
 aws_access_key   = ""
 aws_secret_key   = ""
 public_ssh_key   = ""

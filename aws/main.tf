@@ -30,6 +30,7 @@ data "aws_ami" "rocky_9" {
     name   = "name"
     values = ["Rocky-9-EC2-Base-*x86_64*"]
   }
+
   filter {
     name   = "architecture"
     values = ["x86_64"]
@@ -43,7 +44,6 @@ data "aws_ami" "rocky_9" {
 # VPC e Subnet
 resource "aws_vpc" "main" {
   cidr_block = "10.10.0.0/16"
-  tags = { Name = "vpc-main" }
 }
 
 resource "aws_subnet" "public" {
@@ -51,20 +51,17 @@ resource "aws_subnet" "public" {
   cidr_block        = "10.10.1.0/24"
   availability_zone = "${var.aws_region}a"
   map_public_ip_on_launch = true
-  tags = { Name = "subnet-public" }
 }
 
 resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.10.2.0/24"
   availability_zone = "${var.aws_region}a"
-  tags = { Name = "subnet-private" }
 }
 
 # Internet Gateway e Route Table pubblica
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
-  tags = { Name = "igw-main" }
 }
 
 resource "aws_route_table" "public_rt" {
@@ -73,7 +70,6 @@ resource "aws_route_table" "public_rt" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
-  tags = { Name = "public-rt" }
 }
 
 resource "aws_route_table_association" "pub_assoc" {
@@ -99,7 +95,6 @@ resource "aws_route_table" "private_rt" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat.id
   }
-  tags = { Name = "private-rt" }
 }
 
 resource "aws_route_table_association" "priv_assoc" {
@@ -170,7 +165,6 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
   key_name               = aws_key_pair.vm_key.key_name
   associate_public_ip_address = true
-  tags = { Name = "bastion" }
   user_data = file("${path.module}/cloudinit.sh")
 }
 
@@ -189,7 +183,4 @@ resource "aws_instance" "galaxy_vm" {
     volume_type = "gp3" # Tipo di volume raccomandato per i carichi di lavoro moderni
     delete_on_termination = true # Elimina il disco quando l'istanza viene terminata
   }
-
-  tags = { Name = "galaxy-vm" }
 }
-

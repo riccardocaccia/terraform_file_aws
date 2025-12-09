@@ -180,7 +180,7 @@ resource "aws_instance" "galaxy_vm" {
 
   root_block_device {
     volume_size = 50   # Dimensione in GB (imposta 50 o più)
-    volume_type = "gp3" # Tipo di volume raccomandato per i carichi di lavoro moderni
+    volume_type = "gp3" 
     delete_on_termination = true # Elimina il disco quando l'istanza viene terminata
   }
 }

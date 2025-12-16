@@ -19,6 +19,7 @@ terraform {
 
 provider "aws" {
   region     = var.aws_region 
+# TODO: variabili d'ambiente
   access_key = var.aws_access_key
   secret_key = var.aws_secret_key
 }
@@ -111,6 +112,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+# Comment if you want make the bastion accessible to everyone
     cidr_blocks = [var.bastion_ip]
     description = "SSH from admin IP"
   }

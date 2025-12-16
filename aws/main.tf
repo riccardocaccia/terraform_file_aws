@@ -24,6 +24,7 @@ provider "aws" {
   secret_key = var.aws_secret_key
 }
 
+### data source
 data "aws_ami" "rocky_9" {
   most_recent = true
   owners      = ["792107900819"]
@@ -41,6 +42,22 @@ data "aws_ami" "rocky_9" {
     values = ["available"]
   }
 }
+
+data "aws_ami" "ubuntu_2204" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+#####
 
 # VPC e Subnet
 resource "aws_vpc" "main" {
@@ -161,13 +178,13 @@ resource "aws_key_pair" "vm_key" {
 
 # Bastion instance (public)
 resource "aws_instance" "bastion" {
-  ami                    = data.aws_ami.rocky_9.id
+  ami                    = data.aws_ami.ubuntu_2204.id
   instance_type          = "t3.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
   key_name               = aws_key_pair.vm_key.key_name
   associate_public_ip_address = true
-  user_data = file("${path.module}/cloudinit.sh")
+  user_data = file("${path.module}/cloudinit-bastion.sh")
 }
 
 # VM private (galaxy)

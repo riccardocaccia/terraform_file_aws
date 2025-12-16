@@ -159,7 +159,11 @@ resource "aws_security_group" "internal_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    ####
+    security_groups = [aws_security_group.bastion_sg.id]
+    description     = "HTTP from Bastion Host only"
+    ####
+    #cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {

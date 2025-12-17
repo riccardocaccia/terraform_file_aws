@@ -6,8 +6,6 @@ This repository provisions an AWS infrastructure using **Terraform** with:
 - A custom **VPC with public and private subnets**
 - **NAT Gateway** for outbound internet access from the private subnet
 
-No magic, no shortcuts.
-
 ---
 
 ## Architecture Overview
@@ -39,8 +37,6 @@ No magic, no shortcuts.
 ├── cloudinit.sh # Galaxy VM cloud-init + Ansible bootstrap
 ├── terraform.tfstate # Local Terraform state
 └── terraform.tfstate.backup
-
-
 
 ---
 
@@ -95,5 +91,10 @@ Minimum required:
 terraform init
 terraform plan
 terraform apply
+```
 
+to destroy:
+```bash
+terraform destroy
+```
 

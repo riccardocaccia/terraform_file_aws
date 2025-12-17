@@ -29,13 +29,13 @@ This repository provisions an AWS infrastructure using **Terraform** with:
 ---
 
 ## Repository Structure
-
+```bash
 ├── main.tf      # Terraform infrastructure definition
 ├── variables.tf # Input variables
 ├── terraform.tfvars     # Variable values (NOT for public repos)
 ├── cloudinit-bastion.sh # Bastion cloud-init
 └──  cloudinit.sh         # Galaxy VM cloud-init
-
+```
 ---
 
 ## Cloud-Init Behavior

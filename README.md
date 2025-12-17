@@ -2,7 +2,7 @@
 
 This repository provisions an AWS infrastructure using **Terraform** with:
 - A **public bastion host (Ubuntu 22.04)** configured via cloud-init and Ansible
-- A **private Rocky Linux 9 VM** running Galaxy/Nebula automation via Ansible
+- A **private Rocky Linux 9 VM** running Galaxy VM
 - A custom **VPC with public and private subnets**
 - **NAT Gateway** for outbound internet access from the private subnet
 
@@ -30,13 +30,11 @@ This repository provisions an AWS infrastructure using **Terraform** with:
 
 ## Repository Structure
 
-├── main.tf # Terraform infrastructure definition
+├── main.tf      # Terraform infrastructure definition
 ├── variables.tf # Input variables
-├── terraform.tfvars # Variable values (NOT for public repos)
-├── cloudinit-bastion.sh # Bastion cloud-init + Ansible bootstrap
-├── cloudinit.sh # Galaxy VM cloud-init + Ansible bootstrap
-├── terraform.tfstate # Local Terraform state
-└── terraform.tfstate.backup
+├── terraform.tfvars     # Variable values (NOT for public repos)
+├── cloudinit-bastion.sh # Bastion cloud-init
+└──  cloudinit.sh         # Galaxy VM cloud-init
 
 ---
 
@@ -47,14 +45,14 @@ This repository provisions an AWS infrastructure using **Terraform** with:
 - Installs Ansible and Git
 - Enables IPv4/IPv6 forwarding
 - Clones:
-  - `ansible-role-vpn-bastion`
+  - `ansible-role-vpn-bastion repo`
 - Installs Ansible role dependencies (if any)
 - Executes `site.yml` using the provided inventory
 
 ### Galaxy VM (`cloudinit.sh`)
 - Installs Ansible and Git (Rocky Linux / DNF)
 - Clones:
-  - `laniakea-nebula`
+  - `laniakea-nebula repo`
 - Installs Ansible Galaxy roles
 - Executes `deploy-galaxy.yml` with predefined variables
 
@@ -70,8 +68,6 @@ This repository provisions an AWS infrastructure using **Terraform** with:
 ---
 
 ## Variables
-
-Defined in `variables.tf` and populated in `terraform.tfvars`.
 
 Minimum required:
 - `aws_region`
@@ -97,4 +93,3 @@ to destroy:
 ```bash
 terraform destroy
 ```
-
